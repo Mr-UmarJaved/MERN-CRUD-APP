@@ -12,7 +12,7 @@ function PersonList() {
 
     const fetchPeople = async () => {
         try {
-            const response = await axios.get('crud-backend-bqbadea7h5gbckhe.canadacentral-01.azurewebsites.net/api/people');
+            const response = await axios.get('https://crud-backend-bqbadea7h5gbckhe.canadacentral-01.azurewebsites.net/api/people');
             setPeople(response.data);
         } catch (error) {
             console.error('Error fetching people:', error);
@@ -21,7 +21,7 @@ function PersonList() {
 
     const deletePerson = async (id) => {
         try {
-            await axios.delete(`crud-backend-bqbadea7h5gbckhe.canadacentral-01.azurewebsites.net/api/people/${id}`);
+            await axios.delete(`https://crud-backend-bqbadea7h5gbckhe.canadacentral-01.azurewebsites.net/api/people/${id}`);
             fetchPeople();
         } catch (error) {
             console.error('Error deleting person:', error);
