@@ -21,6 +21,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use('/api/people', personRoutes);
 
+
 // Serve frontend in production
 if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.join(__dirname, '../client/dist')));
