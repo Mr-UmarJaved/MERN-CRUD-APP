@@ -1,40 +1,52 @@
+# Workflow name displayed in GitHub Actions
 name: Deploy Frontend to Azure Storage
 
+# Trigger the workflow on pushes to the 'main' branch, only when files in 'client/' change
 on:
   push:
     branches:
       - main
     paths:
-      - 'client/**'
+      - 'client/**'  # Limits triggering to changes in the frontend directory
 
+# Environment variables available throughout the workflow
 env:
-  AZURE_STORAGE_ACCOUNT: merncrudstorage
-  NODE_VERSION: '18.x'
+  AZURE_STORAGE_ACCOUNT: merncrudstorage  # Name of your Azure Storage Account
+  NODE_VERSION: '18.x'                   # Node.js version to use (matches your requirement)
 
+# Defines the job(s) to run
 jobs:
+  # Job name for building and deploying the frontend
   build-and-deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # Use Ubuntu runner (no Windows needed for frontend)
+
+    # Steps to execute in sequence
     steps:
-      - uses: actions/checkout@v3
+      # Step 1: Checkout the repository code
+      - name: Checkout code
+        uses: actions/checkout@v3  # Official action to fetch your repository code
 
+      # Step 2: Set up Node.js environment
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v3  # Official action to install Node.js
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: ${{ env.NODE_VERSION }}  # Use Node 18 as specified
 
+      # Step 3: Install frontend dependencies
       - name: Install frontend dependencies
-        run: npm install
-        working-directory: ./client
+        run: npm install  # Runs npm install to get dependencies
+        working-directory: ./client  # Sets the working directory to 'client/'
 
+      # Step 4: Build the frontend
       - name: Build frontend
-        run: npm run build
-        working-directory: ./client
+        run: npm run build  # Runs Vite build to generate 'dist/' folder
+        working-directory: ./client  # Ensures build happens in 'client/'
 
-      - name: Deploy to Azure Storage
-        uses: azure/storage-blob-upload@v3
+      # Step 5: Upload built files to Azure Blob Storage
+      - name: Upload to Azure Blob Storage
+        uses: Bacongobbler/azure-blob-storage-upload@v2.0.0  # Community action for Blob Storage upload
         with:
-          account-name: ${{ env.AZURE_STORAGE_ACCOUNT }}
-          connection-string: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
-          container-name: '$web'
-          source-path: './client/dist'
-          sync: true
+          source_dir: './client/dist'  # Directory containing built frontend files
+          container_name: '$web'       # Target container (Azure Static Website default)
+          connection_string: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}  # Secret with Storage credentials
+          sync: 'true'                 # Syncs destination, removing extra files not in source
