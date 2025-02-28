@@ -16,7 +16,7 @@ function PersonForm() {
 
     const fetchPerson = async () => {
         try {
-            const response = await axios.get(`/api/people/${id}`);
+            const response = await axios.get(`crud-backend-bqbadea7h5gbckhe.canadacentral-01.azurewebsites.net/api/people/${id}`);
             setFormData(response.data);
         } catch (error) {
             console.error('Error fetching person:', error);
@@ -31,9 +31,9 @@ function PersonForm() {
         e.preventDefault();
         try {
             if (id) {
-                await axios.put(`/api/people/${id}`, formData);
+                await axios.put(`crud-backend-bqbadea7h5gbckhe.canadacentral-01.azurewebsites.net/api/people/${id}`, formData);
             } else {
-                await axios.post('/api/people', formData);
+                await axios.post('crud-backend-bqbadea7h5gbckhe.canadacentral-01.azurewebsites.net/api/people', formData);
             }
             navigate('/');
         } catch (error) {

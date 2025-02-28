@@ -9,7 +9,9 @@ const app = express();
 const personRoutes = require('./routes/personRoutes');
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: 'https://crudfrontend.z27.web.core.windows.net' // Replace with your storage endpoint
+}));
 app.use('/api/people', personRoutes);
 
 // Serve frontend in production
