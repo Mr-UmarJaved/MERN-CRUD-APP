@@ -1,5 +1,7 @@
+# Workflow to deploy backend to Azure App Service
 name: Deploy Backend to Azure App Service
 
+# Trigger on pushes to main branch when server files change
 on:
   push:
     branches:
@@ -7,33 +9,44 @@ on:
     paths:
       - 'server/**'
 
+# Environment variables
 env:
-  AZURE_WEBAPP_NAME: mern-crud-backend
-  AZURE_WEBAPP_PACKAGE_PATH: './server'
-  NODE_VERSION: '18.x'
+  AZURE_WEBAPP_NAME: mern-crud-backend  # Azure App Service name
+  AZURE_WEBAPP_PACKAGE_PATH: './server' # Path to backend folder
+  NODE_VERSION: '18.x'                  # Node.js version
 
+# Single job for building and deploying
 jobs:
   build-and-deploy:
-    runs-on: windows-latest
+    runs-on: windows-latest  # Windows runner as specified
     steps:
+      # Checkout repository code
       - uses: actions/checkout@v3
 
+      # Set up Node.js environment
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
 
+      # Install backend dependencies in server/
       - name: Install backend dependencies
         run: npm install
         working-directory: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
 
-      - name: Build frontend and copy to backend
+      # Install frontend dependencies and build in client/
+      - name: Build frontend
         run: |
           npm install
           npm run build
-          xcopy /E /I /Y client\dist server\dist
+        working-directory: ./client
+
+      # Copy frontend dist/ to server/dist/
+      - name: Copy frontend build to backend
+        run: xcopy /E /I /Y client\dist server\dist
         working-directory: .
 
+      # Deploy server/ to Azure App Service
       - name: Deploy to Azure App Service
         uses: azure/webapps-deploy@v2
         with:
