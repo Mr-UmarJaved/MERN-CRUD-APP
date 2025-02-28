@@ -1,0 +1,40 @@
+name: Deploy Frontend to Azure Storage
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'client/**'
+
+env:
+  AZURE_STORAGE_ACCOUNT: merncrudstorage
+  NODE_VERSION: '18.x'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install frontend dependencies
+        run: npm install
+        working-directory: ./client
+
+      - name: Build frontend
+        run: npm run build
+        working-directory: ./client
+
+      - name: Deploy to Azure Storage
+        uses: azure/storage-blob-upload@v3
+        with:
+          account-name: ${{ env.AZURE_STORAGE_ACCOUNT }}
+          connection-string: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+          container-name: '$web'
+          source-path: './client/dist'
+          sync: true

@@ -1,0 +1,42 @@
+name: Deploy Backend to Azure App Service
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'server/**'
+
+env:
+  AZURE_WEBAPP_NAME: mern-crud-backend
+  AZURE_WEBAPP_PACKAGE_PATH: './server'
+  NODE_VERSION: '18.x'
+
+jobs:
+  build-and-deploy:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install backend dependencies
+        run: npm install
+        working-directory: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+
+      - name: Build frontend and copy to backend
+        run: |
+          npm install
+          npm run build
+          xcopy /E /I /Y client\dist server\dist
+        working-directory: .
+
+      - name: Deploy to Azure App Service
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
