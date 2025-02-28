@@ -11,7 +11,7 @@ on:
 
 # Environment variables
 env:
-  AZURE_WEBAPP_NAME: mern-crud-backend  # Azure App Service name
+  AZURE_WEBAPP_NAME: crud-backend  # Azure App Service name
   AZURE_WEBAPP_PACKAGE_PATH: './server' # Path to backend folder
   NODE_VERSION: '18.x'                  # Node.js version
 
