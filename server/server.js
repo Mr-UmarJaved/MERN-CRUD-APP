@@ -1,7 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
+
 
 const app = express();
 const personRoutes = require('./routes/personRoutes');
@@ -9,6 +11,14 @@ const personRoutes = require('./routes/personRoutes');
 app.use(express.json());
 app.use(cors());
 app.use('/api/people', personRoutes);
+
+// Serve frontend in production
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname, '../client/dist')));
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+    });
+}
 
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('MongoDB connected'))
