@@ -4,14 +4,21 @@ const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
 
-
 const app = express();
 const personRoutes = require('./routes/personRoutes');
 
+// Enhanced CORS configuration to allow all methods and handle preflight
+const corsOptions = {
+    origin: 'https://crudfrontend.z27.web.core.windows.net',  // Allow only this origin
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],    // Explicitly allow all methods
+    allowedHeaders: ['Content-Type', 'Authorization'],        // Allow common headers
+    credentials: true,                                      // Allow cookies if needed
+    optionsSuccessStatus: 200                               // Ensure OPTIONS returns 200
+};
+
+app.use(cors(corsOptions));
+
 app.use(express.json());
-app.use(cors({
-    origin: 'https://crudfrontend.z27.web.core.windows.net' // Replace with your storage endpoint
-}));
 app.use('/api/people', personRoutes);
 
 // Serve frontend in production
